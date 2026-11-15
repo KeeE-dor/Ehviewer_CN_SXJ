@@ -69,6 +69,23 @@
             android:textAllCaps="true"
             android:textColor="@android:color/white" />
 
+        <TextView
+            android:id="@+id/btn_chinese_check"
+            style="@style/CardMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/category"
+            android:layout_alignBottom="@id/category"
+            android:layout_marginLeft="6dp"
+            android:paddingLeft="6dp"
+            android:paddingTop="2dp"
+            android:paddingRight="6dp"
+            android:paddingBottom="2dp"
+            android:background="@drawable/bg_btn_check_idle"
+            android:text="🔍 查汉化"
+            android:textColor="@android:color/white"
+            android:textSize="11sp" />
+
         <com.hippo.ehviewer.widget.SimpleRatingView
             android:id="@+id/rating"
             android:layout_width="wrap_content"
