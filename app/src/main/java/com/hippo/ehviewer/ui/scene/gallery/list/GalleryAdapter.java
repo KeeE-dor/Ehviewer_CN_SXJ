@@ -37,6 +37,7 @@ import com.hippo.easyrecyclerview.MarginItemDecoration;
 import com.hippo.ehviewer.EhApplication;
 import com.hippo.ehviewer.R;
 import com.hippo.ehviewer.Settings;
+import com.hippo.ehviewer.client.BatchArchiveHelper;
 import com.hippo.ehviewer.client.ChineseSearchHelper;
 import com.hippo.ehviewer.client.EhCacheKeyFactory;
 import com.hippo.ehviewer.client.EhUtils;
@@ -249,6 +250,14 @@ abstract class GalleryAdapter extends RecyclerView.Adapter<GalleryHolder> {
                 holder.favourited.setVisibility((mShowFavourited && gi.favoriteSlot >= -1 && gi.favoriteSlot <= 10) ? View.VISIBLE : View.GONE);
                 holder.downloaded.setVisibility(mDownloadManager.containDownloadInfo(gi.gid) ? View.VISIBLE : View.GONE);
                 ChineseSearchHelper.bindButton(holder.btnChineseCheck, gi, mInflater.getContext());
+                if (holder.checkboxBatch != null) {
+                    if (BatchArchiveHelper.getInstance().isSelectionMode()) {
+                        holder.checkboxBatch.setVisibility(View.VISIBLE);
+                        holder.checkboxBatch.setChecked(BatchArchiveHelper.getInstance().isSelected(gi.gid));
+                    } else {
+                        holder.checkboxBatch.setVisibility(View.GONE);
+                    }
+                }
                 break;
             }
             case TYPE_GRID: {
@@ -267,6 +276,14 @@ abstract class GalleryAdapter extends RecyclerView.Adapter<GalleryHolder> {
                     ((TriangleDrawable) drawable).setColor(color);
                 }
                 holder.simpleLanguage.setText(gi.simpleLanguage);
+                if (holder.checkboxBatch != null) {
+                    if (BatchArchiveHelper.getInstance().isSelectionMode()) {
+                        holder.checkboxBatch.setVisibility(View.VISIBLE);
+                        holder.checkboxBatch.setChecked(BatchArchiveHelper.getInstance().isSelected(gi.gid));
+                    } else {
+                        holder.checkboxBatch.setVisibility(View.GONE);
+                    }
+                }
                 break;
             }
         }

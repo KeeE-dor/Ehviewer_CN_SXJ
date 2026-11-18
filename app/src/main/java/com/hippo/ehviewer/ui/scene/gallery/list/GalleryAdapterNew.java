@@ -24,6 +24,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -38,6 +39,7 @@ import com.hippo.drawable.TriangleDrawable;
 import com.hippo.easyrecyclerview.MarginItemDecoration;
 import com.hippo.ehviewer.EhApplication;
 import com.hippo.ehviewer.R;
+import com.hippo.ehviewer.client.BatchArchiveHelper;
 import com.hippo.ehviewer.client.ChineseSearchHelper;
 import com.hippo.ehviewer.Settings;
 import com.hippo.ehviewer.client.EhCacheKeyFactory;
@@ -265,6 +267,14 @@ abstract class GalleryAdapterNew extends RecyclerView.Adapter<GalleryAdapterNew.
                 holder.favourite.setVisibility((mShowFavourite && gi.favoriteSlot >= -1 && gi.favoriteSlot <= 10) ? View.VISIBLE : View.GONE);
                 holder.downloaded.setVisibility(mDownloadManager.containDownloadInfo(gi.gid) ? View.VISIBLE : View.GONE);
                 ChineseSearchHelper.bindButton(holder.btnChineseCheck, gi, mInflater.getContext());
+                if (holder.checkboxBatch != null) {
+                    if (BatchArchiveHelper.getInstance().isSelectionMode()) {
+                        holder.checkboxBatch.setVisibility(View.VISIBLE);
+                        holder.checkboxBatch.setChecked(BatchArchiveHelper.getInstance().isSelected(gi.gid));
+                    } else {
+                        holder.checkboxBatch.setVisibility(View.GONE);
+                    }
+                }
                 break;
             }
             case TYPE_GRID: {
@@ -283,6 +293,14 @@ abstract class GalleryAdapterNew extends RecyclerView.Adapter<GalleryAdapterNew.
                     ((TriangleDrawable) drawable).setColor(color);
                 }
                 holder.simpleLanguage.setText(gi.simpleLanguage);
+                if (holder.checkboxBatch != null) {
+                    if (BatchArchiveHelper.getInstance().isSelectionMode()) {
+                        holder.checkboxBatch.setVisibility(View.VISIBLE);
+                        holder.checkboxBatch.setChecked(BatchArchiveHelper.getInstance().isSelected(gi.gid));
+                    } else {
+                        holder.checkboxBatch.setVisibility(View.GONE);
+                    }
+                }
                 break;
             }
         }
@@ -310,6 +328,7 @@ abstract class GalleryAdapterNew extends RecyclerView.Adapter<GalleryAdapterNew.
         public final ImageView favourite;
         public final ImageView downloaded;
         public final TextView btnChineseCheck;
+        public final CheckBox checkboxBatch;
 
         public GalleryHolder(View itemView, final OnThumbItemClickListener onThumbItemClickListener, int mType) {
             super(itemView);
@@ -324,6 +343,7 @@ abstract class GalleryAdapterNew extends RecyclerView.Adapter<GalleryAdapterNew.
             favourite = itemView.findViewById(R.id.favourited);
             downloaded = itemView.findViewById(R.id.downloaded);
             btnChineseCheck = itemView.findViewById(R.id.btn_chinese_check);
+            checkboxBatch = itemView.findViewById(R.id.checkbox_batch);
             if (mType == 0) {
                 thumb.setOnClickListener(v -> {
                     if (onThumbItemClickListener != null) {
