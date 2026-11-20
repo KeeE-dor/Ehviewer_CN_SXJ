@@ -50,14 +50,4 @@
         android:textStyle="bold"
         tools:ignore="SpUsage"/>
 
-    <CheckBox
-        android:id="@+id/checkbox_batch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|left"
-        android:layout_margin="2dp"
-        android:clickable="false"
-        android:focusable="false"
-        android:visibility="gone" />
-
 </androidx.cardview.widget.CardView>

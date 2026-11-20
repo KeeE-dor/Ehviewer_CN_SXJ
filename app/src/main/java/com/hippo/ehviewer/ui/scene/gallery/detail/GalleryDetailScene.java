@@ -1340,6 +1340,17 @@ public class GalleryDetailScene extends BaseScene implements View.OnClickListene
         popup.getMenuInflater().inflate(R.menu.scene_gallery_detail, popup.getMenu());
         popup.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
+                case R.id.action_gallery_stats:
+                    long statsGid = getGid();
+                    String statsToken = getToken();
+                    Activity statsActivity = getActivity2();
+                    if (statsGid != -1 && statsToken != null && statsActivity != null) {
+                        Intent statsIntent = new Intent(statsActivity, com.hippo.ehviewer.ui.MyHomeActivity.class);
+                        statsIntent.putExtra(com.hippo.ehviewer.ui.MyHomeActivity.KEY_URL,
+                                EhUrl.getGalleryStatsUrl(statsGid, statsToken));
+                        statsActivity.startActivity(statsIntent);
+                    }
+                    break;
                 case R.id.action_open_in_other_app:
                     String url = getGalleryDetailUrl();
                     Activity activity = getActivity2();

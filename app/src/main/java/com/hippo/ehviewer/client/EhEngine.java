@@ -1424,14 +1424,16 @@ public class EhEngine {
         return new EhNewsDetail();
     }
 
-    public static HomeDetail getHomeDetail(@Nullable EhClient.Task task, OkHttpClient okHttpClient) throws Throwable {
-        String referer = EhUrl.getReferer();
+    private static HomeDetail executeHomeRequest(@Nullable EhClient.Task task, OkHttpClient okHttpClient,
+                                                 @Nullable RequestBody postBody) throws Throwable {
         String url = EhUrl.getHomeUrl();
         Log.d(TAG, url);
-        Request request = new EhRequestBuilder(url, referer).build();
+        Request.Builder reqBuilder = postBody != null
+                ? new EhRequestBuilder(url, EhUrl.REFERER_E, EhUrl.ORIGIN_E).post(postBody)
+                : new EhRequestBuilder(url, EhUrl.REFERER_E);
+        Request request = reqBuilder.build();
         Call call = okHttpClient.newCall(request);
 
-        // Put call
         if (null != task) {
             task.setCall(call);
         }
@@ -1457,39 +1459,21 @@ public class EhEngine {
         }
     }
 
-    public static HomeDetail resetLimit(@Nullable EhClient.Task task, OkHttpClient okHttpClient) throws Throwable {
-        FormBody.Builder builder = new FormBody.Builder();
-        builder.add("reset_imagelimit", "Reset Limit");
-        String referer = EhUrl.getReferer();
-        String url = EhUrl.getHomeUrl();
-        Log.d(TAG, url);
-        FormBody formBody = builder.build();
-        Request request = new EhRequestBuilder(url, referer).post(formBody).build();
-        ;
-        Call call = okHttpClient.newCall(request);
-        // Put call
-        if (null != task) {
-            task.setCall(call);
-        }
+    public static HomeDetail getHomeDetail(@Nullable EhClient.Task task, OkHttpClient okHttpClient) throws Throwable {
+        return executeHomeRequest(task, okHttpClient, null);
+    }
 
-        String body = null;
-        Headers headers = null;
-        int code = -1;
-        try {
-            Response response = call.execute();
-            code = response.code();
-            headers = response.headers();
-            assert response.body() != null;
-            body = response.body().string();
-            String html = EhEventParse.parse(body);
-            if (html != null) {
-                EhApplication.getInstance().showEventPane(html);
-            }
-            return EhHomeParser.parse(body);
-        } catch (Throwable e) {
-            ExceptionUtils.throwIfFatal(e);
-            throwException(call, code, headers, body, e);
-            throw e;
-        }
+    public static HomeDetail resetLimit(@Nullable EhClient.Task task, OkHttpClient okHttpClient) throws Throwable {
+        FormBody formBody = new FormBody.Builder()
+                .add("reset_imagelimit", "Reset Quota")
+                .build();
+        return executeHomeRequest(task, okHttpClient, formBody);
+    }
+
+    public static HomeDetail resetTorrentKey(@Nullable EhClient.Task task, OkHttpClient okHttpClient) throws Throwable {
+        FormBody formBody = new FormBody.Builder()
+                .add("reset_torrent_key", "Reset Torrent Key")
+                .build();
+        return executeHomeRequest(task, okHttpClient, formBody);
     }
 }

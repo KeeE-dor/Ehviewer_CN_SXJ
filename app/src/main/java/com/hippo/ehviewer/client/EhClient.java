@@ -70,6 +70,7 @@ public class EhClient {
     public static final int METHOD_GET_HOME = 25;
     public static final int METHOD_RESET_LIMIT = 26;
     public static final int METHOD_GET_EDIT_COMMENT = 29;
+    public static final int METHOD_RESET_TORRENT_KEY = 30;
 
     private final ThreadPoolExecutor mRequestThreadPool;
     private final OkHttpClient mOkHttpClient;
@@ -210,6 +211,8 @@ public class EhClient {
                         return EhEngine.getHomeDetail(this, mOkHttpClient);
                     case METHOD_RESET_LIMIT:
                         return EhEngine.resetLimit(this, mOkHttpClient);
+                    case METHOD_RESET_TORRENT_KEY:
+                        return EhEngine.resetTorrentKey(this, mOkHttpClient);
                     default:
                         return new IllegalStateException("Can't detect method " + mMethod);
                 }

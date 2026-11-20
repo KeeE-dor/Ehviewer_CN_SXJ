@@ -106,6 +106,7 @@ import com.hippo.network.Network;
 import com.hippo.scene.Announcer;
 import com.hippo.scene.SceneFragment;
 import com.hippo.scene.StageActivity;
+import com.hippo.scene.TransitionHelper;
 import com.hippo.unifile.UniFile;
 import com.hippo.util.BitmapUtils;
 import com.hippo.util.GifHandler;
@@ -312,6 +313,18 @@ public final class MainActivity extends StageActivity
             }
             Announcer announcer = EhUrlOpener.parseUrl(uri.toString());
             if (announcer != null) {
+                if (intent.getBooleanExtra(EhWebPageHelper.EXTRA_RETURN_TO_MY_UPLOADS, false)) {
+                    Bundle args = announcer.getArgs();
+                    if (args == null) {
+                        args = new Bundle();
+                        announcer.setArgs(args);
+                    }
+                    args.putBoolean(EhWebPageHelper.EXTRA_RETURN_TO_MY_UPLOADS, true);
+                    String returnUrl = intent.getStringExtra(EhWebPageHelper.EXTRA_RETURN_MY_UPLOADS_URL);
+                    if (!TextUtils.isEmpty(returnUrl)) {
+                        args.putString(EhWebPageHelper.EXTRA_RETURN_MY_UPLOADS_URL, returnUrl);
+                    }
+                }
                 startScene(processAnnouncer(announcer));
                 return true;
             }
@@ -876,6 +889,26 @@ public final class MainActivity extends StageActivity
         }
     }
 
+    @Override
+    public void finishScene(SceneFragment scene, TransitionHelper transitionHelper) {
+        boolean returnToMyUploads = false;
+        String returnMyUploadsUrl = null;
+        if (scene != null && scene.getArguments() != null
+                && scene.getArguments().getBoolean(EhWebPageHelper.EXTRA_RETURN_TO_MY_UPLOADS, false)) {
+            returnToMyUploads = true;
+            returnMyUploadsUrl = scene.getArguments().getString(EhWebPageHelper.EXTRA_RETURN_MY_UPLOADS_URL);
+            scene.getArguments().remove(EhWebPageHelper.EXTRA_RETURN_TO_MY_UPLOADS);
+        }
+        super.finishScene(scene, transitionHelper);
+        if (returnToMyUploads && !isFinishing() && !isDestroyed()) {
+            Intent uploadsIntent = new Intent(this, MyUploadsActivity.class);
+            if (!TextUtils.isEmpty(returnMyUploadsUrl)) {
+                uploadsIntent.putExtra(MyUploadsActivity.KEY_URL, returnMyUploadsUrl);
+            }
+            startActivity(uploadsIntent);
+        }
+    }
+
     @SuppressLint({"NonConstantResourceId", "RtlHardcoded"})
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -920,6 +953,12 @@ public final class MainActivity extends StageActivity
             case R.id.nav_downloads:
                 startScene(new Announcer(DownloadsScene.class));
                 break;
+            case R.id.nav_my_home:
+                startActivityIfSignedIn(MyHomeActivity.class);
+                break;
+            case R.id.nav_my_uploads:
+                startActivityIfSignedIn(MyUploadsActivity.class);
+                break;
             case R.id.nav_settings:
                 Intent intent = new Intent(this, SettingsActivity.class);
                 startActivityForResult(intent, REQUEST_CODE_SETTINGS);
@@ -936,6 +975,14 @@ public final class MainActivity extends StageActivity
             limitsCountView.hide();
         }
         return true;
+    }
+
+    private void startActivityIfSignedIn(@NonNull Class<?> targetActivity) {
+        if (EhWebPageHelper.hasSignedIn(this)) {
+            startActivity(new Intent(this, targetActivity));
+        } else {
+            Toast.makeText(this, R.string.error_please_login_first, Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override

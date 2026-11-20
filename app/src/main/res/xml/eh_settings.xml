@@ -58,6 +58,20 @@
         app:activity="com.hippo.ehviewer.ui.MyTagsActivity"
         app:allowDividerAbove="true" />
 
+    <com.hippo.ehviewer.preference.SignInRequiredActivityPreference
+        android:key="my_home"
+        android:summary="@string/settings_my_home_summary"
+        android:title="@string/settings_my_home"
+        app:activity="com.hippo.ehviewer.ui.MyHomeActivity"
+        app:allowDividerAbove="true" />
+
+    <com.hippo.ehviewer.preference.SignInRequiredActivityPreference
+        android:key="my_uploads"
+        android:summary="@string/settings_my_uploads_summary"
+        android:title="@string/settings_my_uploads"
+        app:activity="com.hippo.ehviewer.ui.MyUploadsActivity"
+        app:allowDividerAbove="true" />
+
     <com.hippo.preference.ListPreference
         android:defaultValue="0"
         android:key="theme"

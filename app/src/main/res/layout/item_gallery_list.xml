@@ -140,16 +140,5 @@
                 android:layout_height="wrap_content" />
 
         </LinearLayout>
-
-        <CheckBox
-            android:id="@+id/checkbox_batch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_margin="4dp"
-            android:clickable="false"
-            android:focusable="false"
-            android:visibility="gone" />
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

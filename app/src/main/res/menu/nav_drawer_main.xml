@@ -53,6 +53,16 @@
             android:title="@string/downloads"
             android:icon="@drawable/v_download_black_x24"/>
 
+        <item
+            android:id="@+id/nav_my_home"
+            android:title="@string/my_home"
+            android:icon="@drawable/v_account_black_x24"/>
+
+        <item
+            android:id="@+id/nav_my_uploads"
+            android:title="@string/my_uploads"
+            android:icon="@drawable/v_upload_black_x24"/>
+
 <!--        <item-->
 <!--            android:id="@+id/nav_eh_news"-->
 <!--            android:title="@string/news"-->

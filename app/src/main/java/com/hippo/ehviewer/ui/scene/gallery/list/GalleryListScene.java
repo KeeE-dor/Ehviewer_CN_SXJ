@@ -42,8 +42,6 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
@@ -79,7 +77,6 @@ import com.hippo.ehviewer.FavouriteStatusRouter;
 import com.hippo.ehviewer.R;
 import com.hippo.ehviewer.Settings;
 import com.hippo.ehviewer.callBack.SubscriptionCallback;
-import com.hippo.ehviewer.client.BatchArchiveHelper;
 import com.hippo.ehviewer.client.EhCacheKeyFactory;
 import com.hippo.ehviewer.client.EhClient;
 import com.hippo.ehviewer.client.EhRequest;
@@ -241,17 +238,6 @@ public final class GalleryListScene extends BaseScene
 
     private BookmarksDraw mBookmarksDraw;
     private SubscriptionDraw mSubscriptionDraw;
-
-    @Nullable
-    private View mBatchActionBar;
-    @Nullable
-    private TextView mBatchCountText;
-    @Nullable
-    private TextView mBtnBatchSelectAll;
-    @Nullable
-    private TextView mBtnBatchArchive;
-    @Nullable
-    private ImageView mBtnBatchCancel;
 
     @Nullable
     private final Animator.AnimatorListener mActionFabAnimatorListener = new SimpleAnimatorListener() {
@@ -668,23 +654,6 @@ public final class GalleryListScene extends BaseScene
 
         mSearchFab = ViewUtils.$$(mainLayout, R.id.search_fab);
 
-        mBatchActionBar = view.findViewById(R.id.batch_action_bar);
-        mBatchCountText = view.findViewById(R.id.batch_count_text);
-        mBtnBatchSelectAll = view.findViewById(R.id.btn_batch_select_all);
-        mBtnBatchArchive = view.findViewById(R.id.btn_batch_archive);
-        mBtnBatchCancel = view.findViewById(R.id.btn_batch_cancel);
-
-        if (mBtnBatchSelectAll != null) mBtnBatchSelectAll.setOnClickListener(v -> onBatchSelectAllClicked());
-        if (mBtnBatchArchive != null) mBtnBatchArchive.setOnClickListener(v -> onBatchArchiveClicked());
-        if (mBtnBatchCancel != null) mBtnBatchCancel.setOnClickListener(v -> exitBatchMode());
-
-        if (BatchArchiveHelper.getInstance().isSelectionMode()) {
-            if (mBatchActionBar != null) mBatchActionBar.setVisibility(View.VISIBLE);
-            updateBatchBar();
-        } else {
-            if (mBatchActionBar != null) mBatchActionBar.setVisibility(View.GONE);
-        }
-
         int paddingTopSB = resources.getDimensionPixelOffset(R.dimen.gallery_padding_top_search_bar);
         int paddingBottomFab = resources.getDimensionPixelOffset(R.dimen.gallery_padding_bottom_fab);
 
@@ -760,17 +729,6 @@ public final class GalleryListScene extends BaseScene
 
 
     private void onThumbItemClick(int position, View view, GalleryInfo gi) {
-        if (BatchArchiveHelper.getInstance().isSelectionMode()) {
-            if (gi != null) {
-                BatchArchiveHelper.getInstance().toggleSelect(gi);
-                updateBatchBar();
-                if (mAdapter != null) {
-                    mAdapter.notifyDataSetChanged();
-                }
-            }
-            return;
-        }
-
         LoadImageViewNew thumb = view.findViewById(R.id.thumb_new);
         if (thumb.mFailed) {
             thumb.load();
@@ -986,11 +944,6 @@ public final class GalleryListScene extends BaseScene
         mSearchLayout = null;
         mSearchBar = null;
         mSearchFab = null;
-        mBatchActionBar = null;
-        mBatchCountText = null;
-        mBtnBatchSelectAll = null;
-        mBtnBatchArchive = null;
-        mBtnBatchCancel = null;
         mViewTransition = null;
         mLeftDrawable = null;
         mRightDrawable = null;
@@ -1256,11 +1209,6 @@ public final class GalleryListScene extends BaseScene
             return;
         }
 
-        if (BatchArchiveHelper.getInstance().isSelectionMode()) {
-            exitBatchMode();
-            return;
-        }
-
         if (null != mFabLayout && mFabLayout.isExpanded()) {
             mFabLayout.setExpanded(false);
             return;
@@ -1302,17 +1250,6 @@ public final class GalleryListScene extends BaseScene
 
     @Override
     public boolean onItemClick(EasyRecyclerView parent, View view, int position, long id) {
-        if (BatchArchiveHelper.getInstance().isSelectionMode()) {
-            GalleryInfo gi = mHelper != null ? mHelper.getDataAtEx(position) : null;
-            if (gi != null) {
-                BatchArchiveHelper.getInstance().toggleSelect(gi);
-                updateBatchBar();
-                if (mAdapter != null) {
-                    mAdapter.notifyDataSetChanged();
-                }
-            }
-            return true;
-        }
         return onItemClick(view, mHelper.getDataAtEx(position));
     }
 
@@ -1321,14 +1258,6 @@ public final class GalleryListScene extends BaseScene
             return false;
         }
         if (gi == null) {
-            return true;
-        }
-        if (BatchArchiveHelper.getInstance().isSelectionMode()) {
-            BatchArchiveHelper.getInstance().toggleSelect(gi);
-            updateBatchBar();
-            if (mAdapter != null) {
-                mAdapter.notifyDataSetChanged();
-            }
             return true;
         }
         if (null != alertDialog) {
@@ -1350,17 +1279,6 @@ public final class GalleryListScene extends BaseScene
     @Override
     public boolean onItemLongClick(EasyRecyclerView parent, View view, int position, long id) {
         assert mHelper != null;
-        if (BatchArchiveHelper.getInstance().isSelectionMode()) {
-            GalleryInfo gi = mHelper.getDataAtEx(position);
-            if (gi != null) {
-                BatchArchiveHelper.getInstance().toggleSelect(gi);
-                updateBatchBar();
-                if (mAdapter != null) {
-                    mAdapter.notifyDataSetChanged();
-                }
-            }
-            return true;
-        }
         return onItemLongClick(mHelper.getDataAtEx(position), view);
     }
 
@@ -1375,15 +1293,6 @@ public final class GalleryListScene extends BaseScene
             return true;
         }
 
-        if (BatchArchiveHelper.getInstance().isSelectionMode()) {
-            BatchArchiveHelper.getInstance().toggleSelect(gi);
-            updateBatchBar();
-            if (mAdapter != null) {
-                mAdapter.notifyDataSetChanged();
-            }
-            return true;
-        }
-
         boolean downloaded = mDownloadManager.getDownloadState(gi.gid) != DownloadInfo.STATE_INVALID;
         boolean favourited = gi.favoriteSlot != -2;
 
@@ -1391,14 +1300,12 @@ public final class GalleryListScene extends BaseScene
                 context.getString(R.string.read),
                 context.getString(downloaded ? R.string.delete_downloads : R.string.download),
                 context.getString(favourited ? R.string.remove_from_favourites : R.string.add_to_favourites),
-                "批量选择 / 归档",
         };
 
         int[] icons = new int[]{
                 R.drawable.v_book_open_x24,
                 downloaded ? R.drawable.v_delete_x24 : R.drawable.v_download_x24,
                 favourited ? R.drawable.v_heart_broken_x24 : R.drawable.v_heart_x24,
-                R.drawable.v_check_all_dark_x24,
         };
 
         @SuppressLint("InflateParams") LinearLayout linearLayout = (LinearLayout) getLayoutInflater2().inflate(R.layout.gallery_item_dialog_coustom_title, null);
@@ -1452,9 +1359,6 @@ public final class GalleryListScene extends BaseScene
                             } else {
                                 CommonOperations.addToFavorites(activity, gi, new AddToFavoriteListener(context, activity.getStageId(), getTag()), false);
                             }
-                            break;
-                        case 3: // Batch selection
-                            enterBatchMode(gi);
                             break;
                     }
                 }).show();
@@ -1583,108 +1487,9 @@ public final class GalleryListScene extends BaseScene
                 }
                 onItemClick(null, gInfoL.get((int) (Math.random() * gInfoL.size())));
                 break;
-            case 4: // 批量选择模式
-                enterBatchMode(null);
-                break;
         }
 
         view.setExpanded(false);
-    }
-
-    public void enterBatchMode(@Nullable GalleryInfo initialSelect) {
-        BatchArchiveHelper helper = BatchArchiveHelper.getInstance();
-        helper.setSelectionMode(true);
-        if (initialSelect != null) {
-            helper.select(initialSelect);
-        }
-        if (mBatchActionBar != null) {
-            mBatchActionBar.setVisibility(View.VISIBLE);
-        }
-        if (mFabLayout != null) {
-            mFabLayout.setExpanded(false);
-            mFabLayout.getPrimaryFab().setVisibility(View.GONE);
-        }
-        updateBatchBar();
-        if (mAdapter != null) {
-            mAdapter.notifyDataSetChanged();
-        }
-    }
-
-    public void exitBatchMode() {
-        BatchArchiveHelper helper = BatchArchiveHelper.getInstance();
-        helper.setSelectionMode(false);
-        if (mBatchActionBar != null) {
-            mBatchActionBar.setVisibility(View.GONE);
-        }
-        if (mFabLayout != null) {
-            mFabLayout.getPrimaryFab().setVisibility(View.VISIBLE);
-        }
-        if (mAdapter != null) {
-            mAdapter.notifyDataSetChanged();
-        }
-    }
-
-    private void updateBatchBar() {
-        BatchArchiveHelper helper = BatchArchiveHelper.getInstance();
-        int count = helper.getSelectedCount();
-        if (mBatchCountText != null) {
-            mBatchCountText.setText("已选 " + count + " 项");
-        }
-        if (mBtnBatchArchive != null) {
-            mBtnBatchArchive.setEnabled(count > 0);
-            mBtnBatchArchive.setAlpha(count > 0 ? 1.0f : 0.5f);
-        }
-    }
-
-    private void onBatchSelectAllClicked() {
-        if (mHelper == null) return;
-        List<GalleryInfo> list = mHelper.getData();
-        if (list == null || list.isEmpty()) return;
-
-        BatchArchiveHelper helper = BatchArchiveHelper.getInstance();
-        boolean allSelected = true;
-        for (GalleryInfo gi : list) {
-            if (gi != null && !helper.isSelected(gi.gid)) {
-                allSelected = false;
-                break;
-            }
-        }
-
-        if (allSelected) {
-            for (GalleryInfo gi : list) {
-                if (gi != null) helper.unselect(gi.gid);
-            }
-        } else {
-            for (GalleryInfo gi : list) {
-                if (gi != null) helper.select(gi);
-            }
-        }
-        updateBatchBar();
-        if (mAdapter != null) {
-            mAdapter.notifyDataSetChanged();
-        }
-    }
-
-    private void onBatchArchiveClicked() {
-        BatchArchiveHelper helper = BatchArchiveHelper.getInstance();
-        final List<GalleryInfo> selectedList = helper.getSelectedList();
-        if (selectedList.isEmpty()) {
-            Toast.makeText(getEHContext(), "请至少选择一本画廊", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        Context context = getEHContext();
-        if (context == null) return;
-
-        new AlertDialog.Builder(context)
-                .setTitle("确认批量归档下载")
-                .setMessage("即将为选中的 " + selectedList.size() + " 本画廊进行自动归档下载。\n\n• 默认优先下载【原画质/Original】档\n• 若无原画质则自动选择【重采样/Resample】档\n• 队列将按安全频率自动依次获取直链并加入下载管理器。")
-                .setPositiveButton("立即开始", (dialog, which) -> {
-                    helper.startBatchDownload(context, selectedList);
-                    exitBatchMode();
-                })
-                .setNegativeButton(android.R.string.cancel, null)
-                .show();
     }
 
     public void onFilter(boolean open, int num) {

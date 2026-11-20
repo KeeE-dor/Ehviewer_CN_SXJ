@@ -79,6 +79,21 @@ public class EhUrl {
     public static final String URL_MY_TAGS_E = HOST_E + "mytags";
     public static final String URL_MY_TAGS_EX = HOST_EX + "mytags";
 
+    public static final String HOST_UPLD_E = "https://upld.e-hentai.org/";
+
+    public static final String URL_MY_UPLOADS_E = HOST_UPLD_E + "manage";
+    public static final String URL_MY_UPLOADS_NEW_E = HOST_UPLD_E + "managegallery?act=new";
+    public static final String URL_MY_UPLOADS_FOLDERS_E = HOST_UPLD_E + "managefolders";
+
+    public static final String URL_STATS_E = HOST_E + "stats.php";
+    public static final String URL_HENTAI_AT_HOME_E = HOST_E + "hentaiathome.php";
+    public static final String URL_DONATIONS_E = HOST_E + "bitcoin.php";
+    public static final String URL_HATH_PERKS_E = HOST_E + "hathperks.php";
+    public static final String URL_EXCHANGE_HATH_E = HOST_E + "exchange.php?t=hath";
+    public static final String URL_EXCHANGE_GP_E = HOST_E + "exchange.php?t=gp";
+    public static final String URL_LOGS_CREDITS_E = HOST_E + "logs.php?t=credits";
+    public static final String URL_LOGS_KARMA_E = HOST_E + "logs.php?t=karma";
+
     public static final String URL_WATCHED_E = HOST_E + "watched";
     public static final String URL_WATCHED_EX = HOST_EX + "watched";
 
@@ -171,6 +186,23 @@ public class EhUrl {
             case SITE_EX:
                 return URL_MY_TAGS_EX;
         }
+    }
+
+    public static String getMyUploadsUrl() {
+        // ExHentai 上传页存在功能阉割，统一始终使用 E-Hentai 完整上传管理端
+        return URL_MY_UPLOADS_E;
+    }
+
+    public static String getMyUploadsNewUrl() {
+        return URL_MY_UPLOADS_NEW_E;
+    }
+
+    public static String getMyUploadsFoldersUrl() {
+        return URL_MY_UPLOADS_FOLDERS_E;
+    }
+
+    public static String getGalleryStatsUrl(long gid, String token) {
+        return HOST_E + "stats.php?gid=" + gid + "&t=" + token;
     }
 
     /**

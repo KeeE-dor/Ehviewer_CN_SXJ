@@ -17,7 +17,6 @@
 package com.hippo.ehviewer.ui.scene;
 
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
@@ -38,7 +37,6 @@ public class GalleryHolder extends RecyclerView.ViewHolder {
     public final ImageView favourited;
     public final ImageView downloaded;
     public final TextView btnChineseCheck;
-    public final CheckBox checkboxBatch;
 
     public GalleryHolder(View itemView) {
         super(itemView);
@@ -53,7 +51,6 @@ public class GalleryHolder extends RecyclerView.ViewHolder {
         favourited = itemView.findViewById(R.id.favourited);
         downloaded = itemView.findViewById(R.id.downloaded);
         btnChineseCheck = itemView.findViewById(R.id.btn_chinese_check);
-        checkboxBatch = itemView.findViewById(R.id.checkbox_batch);
     }
 
 }
